@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>逐浪智用社</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
       margin: 0;
@@ -147,8 +148,55 @@ background-color: #050814;
       </div>
     </div>
   </div>
+  <!-- 完整的报名表单区 -->
+<section class="register-section" style="padding: 40px 20px; text-align: center; position: relative; z-index: 10;">
+  <h2 style="color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); margin-bottom: 20px;">加入我们</h2>
+  <form id="registerForm" style="background: rgba(20, 30, 50, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); padding: 30px; border-radius: 10px; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; text-align: left;">
+    
+    <label style="color: #fff;">姓名</label>
+    <input type="text" id="name" required style="padding: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: #fff;">
+    
+    <label style="color: #fff;">年级/专业</label>
+    <input type="text" id="major" required style="padding: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: #fff;">
+    
+    <label style="color: #fff;">意向部门</label>
+    <select id="department" style="padding: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: #fff;">
+      <option value="技术部" style="color: black;">技术部</option>
+      <option value="宣传部" style="color: black;">宣传部</option>
+      <option value="文体部" style="color: black;">文体部</option>
+      <option value="外联部" style="color: black;">外联部</option>
+      <option value="学习部" style="color: black;">学习部</option>
+    </select>
+    
+    <button type="submit" style="margin-top: 10px; padding: 12px; background: #00ffff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">提交报名</button>
+  </form>
+</section>
   <div class="footer">
     &copy; 2026 逐浪智用社. 版权所有.
   </div>
+<script>
+  const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); 
+    const name = document.getElementById('name').value;
+    const major = document.getElementById('major').value;
+    const department = document.getElementById('department').value;
+
+    const { data, error } = await supabaseClient
+      .from('registrations')
+      .insert([{ name: name, major: major, department: department }]);
+
+    if (error) {
+      console.error(error);
+      alert('报名失败，请检查控制台！');
+    } else {
+      alert('报名成功！欢迎加入逐浪智用社！');
+      document.getElementById('registerForm').reset(); 
+    }
+  });
+</script>
 </body>
 </html>
