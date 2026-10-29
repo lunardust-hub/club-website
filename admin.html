@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社团管理后台</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #050814;
+      color: #d4d4d4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    a {
+      text-decoration: none;
+      color: #61dafb;
+    }
+    a:hover {
+      color: #46a3f5;
+    }
+    .loading {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 80%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+    }
+    th {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="loading">正在加载...</div>
+  <table id="registrationTable">
+    <thead>
+      <tr>
+        <th>姓名</th>
+        <th>专业</th>
+        <th>意向部门</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 数据将通过 JavaScript 动态插入到这里 -->
+    </tbody>
+  </table>
+  <a href="index.html">返回首页</a>
+
+  <script>
+     // 1. 改名，防止冲突
+  const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+  // 注意：这里的 Key 我用了你截图里的，如果有截断请自己补全
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // 2. 把主逻辑包在一个 async 函数里（解决 await 报错）
+  async function initAdmin() {
+    const password = prompt('请输入管理员密码：');
+    if (password !== 'admin123') {
+      alert('密码错误，请重试。');
+      window.location.href = 'index.html';
+      return; // 直接结束，不往下执行了
+    }
+
+    // 安全地隐藏加载提示（如果你HTML里没有.loading，这行自动跳过，不会报错）
+    const loading = document.querySelector('.loading');
+    if (loading) {
+      loading.style.display = 'none';
+    }
+
+    const tableBody = document.querySelector('#registrationTable tbody');
+
+    // 3. 使用改名后的 supabaseClient 请求数据
+    const { data, error } = await supabaseClient
+      .from('registrations')
+      .select('*');
+
+    if (error) {
+      console.error(error);
+      alert('获取数据失败，请检查网络或控制台！');
+    } else {
+      // 4. 渲染数据
+      data.forEach(registration => {
+        const row = tableBody.insertRow();
+        const nameCell = row.insertCell(0);
+        const majorCell = row.insertCell(1);
+        const departmentCell = row.insertCell(2);
+
+        nameCell.textContent = registration.name;
+        majorCell.textContent = registration.major;
+        departmentCell.textContent = registration.department;
+      });
+    }
+  }
+
+  // 5. 启动这个函数
+  initAdmin();
+  </script>
+</body>
+</html>
