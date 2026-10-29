@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开源分享 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .content-container {
+            max-width: 800px; margin: 120px auto 50px auto;
+            background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px;
+            padding: 40px; color: #d4d4d4; position: relative; z-index: 10;
+        }
+        .content-container h1 { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); margin-bottom: 20px; text-align: center; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #00ffff; text-decoration: none; font-weight: bold; }
+        .back-btn:hover { text-shadow: 0 0 10px #00ffff; }
+        .resource-list { list-style: none; padding: 0; }
+        .resource-list li { background: rgba(255,255,255,0.05); margin-bottom: 15px; padding: 15px; border-radius: 8px; border-left: 3px solid #00ffff; }
+        .resource-list a { color: #00ffff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header"><div class="logo">逐浪智用社</div></div>
+    
+    <div class="content-container">
+        <!-- 修好了返回首页 -->
+        <a href=" " class="back-btn">← 返回首页</a >
+        
+        <h1>开源分享资源库</h1>
+        <p style="margin-bottom: 30px; color: #a1a1aa; text-align: center;">这里是社团为大家整理的干货，持续更新中...</p >
+        
+        <div style="display: flex; flex-direction: column; gap: 25px;">
+            
+            <!-- 模块 1：AI 工具 -->
+            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
+                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">🤖 AI 工具导航</h2>
+                <!-- 注意这里：留了空壳，并加上了 id="list-ai" -->
+                <ul class="resource-list" id="list-ai"></ul> 
+            </div>
+
+            <!-- 模块 2：学习资源 -->
+            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
+                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">📚 学习资源分享</h2>
+                <!-- 留了空壳，并加上了 id="list-study" -->
+                <ul class="resource-list" id="list-study"></ul>
+            </div>
+
+            <!-- 模块 3：GitHub 社群 -->
+            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
+                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">🐙 GitHub 社群</h2>
+                <!-- 留了空壳，并加上了 id="list-github" -->
+                <ul class="resource-list" id="list-github"></ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 引入 Supabase SDK 和动态加载脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️注意：记得换成你自己的真实Key
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function loadResources() {
+            // 从 resources 表拉取数据
+            const { data, error } = await supabaseClient.from('resources').select('*');
+            if (error) { 
+                console.error("加载资源失败：", error); 
+                return; 
+            }
+
+            // 每次加载前先清空列表
+            document.getElementById('list-ai').innerHTML = '';
+            document.getElementById('list-study').innerHTML = '';
+            document.getElementById('list-github').innerHTML = '';
+
+            data.forEach(item => {
+                // 生成卡片的 HTML
+                const html = `
+                    <li>
+                        <strong>${item.title}：</strong> 
+                        <a href="${item.link}" target="_blank">点击查看</a > 
+                        <br><span style="font-size: 13px; color: #888;">${item.desc}</span>
+                    </li>
+                `;
+                
+                // 根据分类把数据塞进对应的框里
+                if (item.category === 'ai') {
+                    document.getElementById('list-ai').innerHTML += html;
+                } else if (item.category === 'study') {
+                    document.getElementById('list-study').innerHTML += html;
+                } else if (item.category === 'github') {
+                    document.getElementById('list-github').innerHTML += html;
+                }
+            });
+        }
+
+        // 页面加载时立刻执行
+        loadResources();
+    </script>
+</body>
+</html>

@@ -13,36 +13,68 @@
     <div class="nav-links">
       <a href="#about" class="nav-link">关于我们</a>
       <a href="#projects" class="nav-link">项目展示</a>
-      <a href="#team" class="nav-link">团队成员</a>
+      <a href="#register" class="nav-link">加入我们</a>
     </div>
   </div>
   <div class="hero">
     <h1>用开源与AI，打破信息差</h1>
     <p>山东大学 · 科技与创新社团</p>
   </div>
+  <!-- 关于我们 -->
+<section id="about" class="register-section" style="padding: 60px 20px; text-align: center; position: relative; z-index: 10;">
+  <h2 style="color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); margin-bottom: 20px;">关于我们</h2>
+  <div style="background: rgba(20, 30, 50, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); padding: 30px; border-radius: 10px; max-width: 800px; margin: 0 auto; text-align: left; color: #d4d4d4; line-height: 1.8;">
+    <p><strong style="color: #00ffff;">逐浪智用社</strong> 创立于我们对 AI 时代的迷茫与反思。在技术浪潮席卷而来时，我们不想只做被动追赶浪花的人，更立志成为“造大船”的人——学会驾驭技术，创造价值，服务身边的人。</p >
+    <br>
+    <p>我们致力于搭建科创竞赛平台，分享各类比赛资源；开展 AI 工具学习，教大家用 AI 结合专业实现提质增效；同时打造跨专业的圈子，一起跨越迷茫，共同成长。</p >
+  </div>
+</section>
+<!-- 最新动态 (推文区) -->
+<section class="register-section" style="padding: 60px 20px; text-align: center; position: relative; z-index: 10;">
+  <h2 style="color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); margin-bottom: 30px;">最新动态</h2>
+  
+  <!-- 注意这里：我们留了一个空的容器，并且加上了 id="news-list" -->
+  <div id="news-list" style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+  </div>
+</section>
   <div class="project-section" id="projects">
     <h2 class="project-title">项目与活动</h2>
     <div class="project-grid">
-      <div class="project-card">
-        <h3>开源分享</h3>
-        <p>分享最新的开源工具和资源，帮助大家更好地使用和了解AI和开源技术。</p>
-      </div>
-      <div class="project-card">
-        <h3>比赛</h3>
-        <p>组织成员参与各类技术竞赛，在实战中提升团队的技术水平与创新能力。</p>
-      </div>
-      <div class="project-card">
-        <h3>技术研讨会</h3>
-        <p>定期举办技术研讨会，邀请行业专家分享最新的技术趋势和实战经验。</p>
-      </div>
-      <div class="project-card">
-        <h3>项目协作</h3>
-        <p>提供一个协作平台，让团队成员可以共同开发和维护开源项目。</p>
-      </div>
+     <!-- 卡片 1 -->
+<a href="resource-open.html" style="text-decoration: none; color: inherit; display: block;">
+  <div class="project-card">
+    <h3>开源分享</h3>
+    <p>分享最新的开源工具和资源，帮助大家更好地使用和了解AI和开源技术。</p >
+  </div>
+</a >
+
+<!-- 卡片 2 -->
+<a href="resource-competition.html" style="text-decoration: none; color: inherit; display: block;">
+  <div class="project-card">
+    <h3>比赛平台</h3>
+    <p>组织成员参与各类技术竞赛，在实战中提升团队的技术水平与创新能力。</p >
+  </div>
+</a >
+
+<!-- 卡片 3 -->
+<a href="resource-seminar.html" style="text-decoration: none; color: inherit; display: block;">
+  <div class="project-card">
+    <h3>技术研讨会和精品课</h3>
+    <p>定期举办技术研讨会，邀请行业专家分享最新的技术趋势和实战经验。</p >
+  </div>
+</a >
+
+<!-- 卡片 4 -->
+<a href="resource-collab.html" style="text-decoration: none; color: inherit; display: block;">
+  <div class="project-card">
+    <h3>项目协作</h3>
+    <p>提供一个协作平台，让团队成员可以共同开发和维护开源项目。</p >
+  </div>
+</a >
     </div>
   </div>
   <!-- 完整的报名表单区 -->
-<section class="register-section" style="padding: 40px 20px; text-align: center; position: relative; z-index: 10;">
+<section id="register" class="register-section" style="padding: 40px 20px; text-align: center; position: relative; z-index: 10;">
   <h2 style="color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); margin-bottom: 20px;">加入我们</h2>
   <form id="registerForm" style="background: rgba(20, 30, 50, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); padding: 30px; border-radius: 10px; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; text-align: left;">
     
@@ -65,7 +97,7 @@
   </form>
 </section>
   <div class="footer">
-    &copy; 2026 逐浪智用社. 版权所有.
+    &copy; 2026 逐浪智用社. 版权所有.<a href="admin.html" style="color: #333; text-decoration: none; font-size: 12px; margin-left: 20px;">管理员入口</a >
   </div>
 <script src="script.js"></script>
 </body>
