@@ -78,7 +78,8 @@
             
             <input type="text" id="newsTitle" placeholder="请输入推文标题（如：迎新大会圆满结束）" 
                    style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; font-size: 16px;">
-            
+            <input type="text" id="newsCover" placeholder="推文配图链接（可选，如：https://...）" 
+       style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
             <textarea id="newsContent" placeholder="请输入推文具体内容..." rows="8" 
                       style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; font-size: 16px; resize: vertical;"></textarea>
             
@@ -97,6 +98,7 @@
                     <th>姓名</th>
                     <th>专业</th>
                     <th>意向部门</th>
+                    <th>联系方式</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,11 +120,16 @@
         
         <input type="text" id="resDesc" placeholder="一句话描述（如：历年真题整理）" 
                style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
-        
+        <input type="text" id="resCover" placeholder="封面图链接（如：https://xxx.jpg）" 
+       style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
+
+<textarea id="resDetail" placeholder="详细内容或教程正文..." rows="5" 
+          style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;"></textarea>
         <select id="resCategory" style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(20,30,50, 0.9); color: white;">
             <option value="ai">AI 工具导航</option>
             <option value="study">学习资源分享</option>
             <option value="github">GitHub 社群</option>
+             
         </select>
         
         <button onclick="publishResource()" 
@@ -171,10 +178,12 @@
                     const nameCell = row.insertCell(0);
                     const majorCell = row.insertCell(1);
                     const departmentCell = row.insertCell(2);
+                    const contactCell = row.insertCell(3);
 
                     nameCell.textContent = registration.name;
                     majorCell.textContent = registration.major;
                     departmentCell.textContent = registration.department;
+                    contactCell.textContent = registration.contact||'未填写';
                 });
             }
         }
@@ -223,33 +232,48 @@ function switchTab(tabId) {
     document.getElementById('btn-' + tabId).classList.add('active');
 }
 2// 5. 发布资源函数
+// 5. 发布资源函数（升级版）
 async function publishResource() {
     const title = document.getElementById('resTitle').value;
     const link = document.getElementById('resLink').value;
     const desc = document.getElementById('resDesc').value;
     const category = document.getElementById('resCategory').value;
+    // 获取新字段的值
+    const cover_url = document.getElementById('resCover').value; 
+    const detail = document.getElementById('resDetail').value;   
 
     if (!title || !link) { alert("资源名称和链接不能为空！"); return; }
 
+    // 将新字段一起写入数据库
     const { error } = await supabaseClient
         .from('resources')
-        .insert([{ title: title, link: link, desc: desc, category: category }]);
+        .insert([{ 
+            title: title, 
+            link: link, 
+            desc: desc, 
+            category: category,
+            cover_url: cover_url, 
+            detail: detail        
+        }]);
 
     if (error) {
         console.error(error);
         alert("发布失败：" + error.message);
     } else {
-        alert("🎉 资源发布成功！去开源分享页看看吧！");
+        alert("🎉 资源发布成功！去前端看看吧！");
+        // 清空所有输入框
         document.getElementById('resTitle').value = '';
         document.getElementById('resLink').value = '';
         document.getElementById('resDesc').value = '';
+        document.getElementById('resCover').value = '';
+        document.getElementById('resDetail').value = '';
     }
 }
 
 // 启动
 initAdmin();
-        // 启动
-        initAdmin();
+        
+        
     </script>
 </body>
 </html>

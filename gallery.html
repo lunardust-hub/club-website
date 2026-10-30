@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>社团风采 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-container { max-width: 1000px; margin: 100px auto 50px auto; padding: 20px; position: relative; z-index: 10; }
+        .back-btn { color: #00ffff; text-decoration: none; font-size: 18px; display: inline-block; margin-bottom: 20px; position: relative; z-index: 99; }
+        .page-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); text-align: center; margin-bottom: 40px; font-size: 36px; }
+        
+        /* 瀑布流卡片布局 */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .news-card { background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .news-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2); }
+        .news-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid #00ffff; background: #000; }
+        .news-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .news-date { font-size: 12px; color: #00ffff; margin-bottom: 8px; display: block; }
+        .news-title { color: #fff; font-size: 20px; margin-bottom: 10px; font-weight: bold; }
+        .news-content { color: #a1a1aa; font-size: 14px; line-height: 1.6; flex-grow: 1; }
+    </style>
+</head>
+<body>
+    <div class="gallery-container">
+        <a href="index.html" class="back-btn">← 返回首页</a >
+        <h1 class="page-title">📸 社团风采展示</h1>
+        
+        <div class="gallery-grid" id="gallery-list">
+            <!-- JS 动态注入 -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 换成你的
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function loadGallery() {
+            // 拉取所有推文，最新的在最前面
+            const { data, error } = await supabaseClient
+                .from('news')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) { console.error(error); return; }
+
+            const list = document.getElementById('gallery-list');
+            if (data.length === 0) {
+                list.innerHTML = '<p style="color:#888; text-align:center; grid-column: 1/-1;">宣传部还没有发布风采内容哦~</p >';
+                return;
+            }
+
+            data.forEach(item => {
+                // 有图用图，没图用默认星空
+                const img = item.cover_url || 'bg.jpg';
+                
+                const html = `
+                    <div class="news-card">
+                        <img src="${img}" class="news-img" alt="风采图">
+                        <div class="news-info">
+                            <span class="news-date">📅 ${item.date_str || '最新发布'}</span>
+                            <div class="news-title">${item.title}</div>
+                            <div class="news-content">${item.content}</div>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+        }
+        loadGallery();
+    </script>
+</body>
+</html>

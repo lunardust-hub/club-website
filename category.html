@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>分类列表 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .list-container { max-width: 900px; margin: 100px auto 50px auto; padding: 20px; position: relative; z-index: 10; }
+        .back-btn { color: #00ffff; text-decoration: none; font-size: 18px; display: inline-block; margin-bottom: 20px; }
+        .page-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); text-align: center; margin-bottom: 40px; font-size: 32px; }
+        .resource-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; margin-bottom: 15px; display: flex; gap: 20px; align-items: center; border-left: 4px solid #00ffff; transition: 0.3s; }
+        .resource-item:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
+    </style>
+</head>
+<body>
+    <div class="list-container">
+        <a href="resource-open.html" class="back-btn">← 返回资源大厅</a >
+        <h1 id="page-title" class="page-title">加载中...</h1>
+        
+        <!-- 列表容器 -->
+        <ul id="resource-list" style="list-style: none; padding: 0;"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   <script>
+    const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️换成你的真实Key
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // 读取 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('cat') || 'ai'; 
+    
+    const titleMap = { 'ai': '🤖 AI 工具导航', 'study': '📚 学习资源分享', 'github': '🐙 GitHub 社群' };
+    document.getElementById('page-title').innerText = titleMap[category] || '资源列表';
+
+    async function loadData() {
+        const { data, error } = await supabaseClient
+            .from('resources')
+            .select('*')
+            .eq('category', category);
+
+        if (error) { console.error(error); return; }
+
+        const list = document.getElementById('resource-list');
+        if(data.length === 0) {
+            list.innerHTML = '<p style="color:#888; text-align:center;">这里还空空如也，等待发布第一条资源~</p >';
+            return;
+        }
+
+        // 渲染列表（注意这里严格使用了反引号 ` 和 innerHTML）
+        data.forEach(item => {
+            const imgUrl = item.cover_url || 'bg.jpg'; 
+            
+            const html = `
+                <li class="resource-item">
+                    <img src="${imgUrl}" style="width: 120px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex-shrink: 0;">
+                    <div>
+                        <a href="resource-detail.html?id=${item.id}" style="font-size: 18px; font-weight: bold; color: #fff; text-decoration: none; display: block; margin-bottom: 5px;">
+                            ${item.title} <span style="font-size: 12px; color: #00ffff; margin-left: 10px;">阅读详情 →</span>
+                        </a > 
+                        <span style="font-size: 14px; color: #a1a1aa;">${item.desc || '暂无描述'}</span>
+                    </div>
+                </li>
+            `;
+            // 必须是 innerHTML +=
+            list.innerHTML += html;
+        });
+    }
+    loadData();
+</script>
+</body>
+</html>

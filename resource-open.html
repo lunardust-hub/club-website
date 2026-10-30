@@ -23,82 +23,40 @@
 <body>
     <div class="header"><div class="logo">逐浪智用社</div></div>
     
-    <div class="content-container">
-        <!-- 修好了返回首页 -->
-        <a href=" " class="back-btn">← 返回首页</a >
+    <div class="content-container" style="max-width: 900px; margin: 120px auto; padding: 40px; position: relative; z-index: 10;">
+        <a href="index.html" class="back-btn" style="color: #00ffff; text-decoration: none; font-size: 18px;">← 返回首页</a >
+        <h1 style="color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); text-align: center; margin-bottom: 40px; font-size: 36px;">开源分享资源库</h1>
         
-        <h1>开源分享资源库</h1>
-        <p style="margin-bottom: 30px; color: #a1a1aa; text-align: center;">这里是社团为大家整理的干货，持续更新中...</p >
-        
-        <div style="display: flex; flex-direction: column; gap: 25px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
             
-            <!-- 模块 1：AI 工具 -->
-            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
-                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">🤖 AI 工具导航</h2>
-                <!-- 注意这里：留了空壳，并加上了 id="list-ai" -->
-                <ul class="resource-list" id="list-ai"></ul> 
-            </div>
+            <!-- 分类 1：AI 工具导航 -->
+            <a href="category.html?cat=ai" style="text-decoration: none;">
+                <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 15px; padding: 40px 20px; text-align: center; transition: 0.3s; height: 100%; box-sizing: border-box;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0 20px rgba(0,255,255,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
+                    <h2 style="color: #fff; font-size: 24px; margin-bottom: 10px;">AI 工具导航</h2>
+                    <p style="color: #a1a1aa; font-size: 14px;">汇聚大家分享的实用 AI 软件与提效技巧</p >
+                </div>
+            </a >
 
-            <!-- 模块 2：学习资源 -->
-            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
-                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">📚 学习资源分享</h2>
-                <!-- 留了空壳，并加上了 id="list-study" -->
-                <ul class="resource-list" id="list-study"></ul>
-            </div>
+            <!-- 分类 2：学习资源分享 -->
+            <a href="category.html?cat=study" style="text-decoration: none;">
+                <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 15px; padding: 40px 20px; text-align: center; transition: 0.3s; height: 100%; box-sizing: border-box;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0 20px rgba(0,255,255,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <div style="font-size: 50px; margin-bottom: 15px;">📚</div>
+                    <h2 style="color: #fff; font-size: 24px; margin-bottom: 10px;">学习资源分享</h2>
+                    <p style="color: #a1a1aa; font-size: 14px;">期末真题、复习笔记与大家整理的干货</p >
+                </div>
+            </a >
 
-            <!-- 模块 3：GitHub 社群 -->
-            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 30px;">
-                <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 22px;">🐙 GitHub 社群</h2>
-                <!-- 留了空壳，并加上了 id="list-github" -->
-                <ul class="resource-list" id="list-github"></ul>
-            </div>
+            <!-- 分类 3：GitHub 社群 -->
+            <a href="category.html?cat=github" style="text-decoration: none;">
+                <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 15px; padding: 40px 20px; text-align: center; transition: 0.3s; height: 100%; box-sizing: border-box;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 0 20px rgba(0,255,255,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <div style="font-size: 50px; margin-bottom: 15px;">🐙</div>
+                    <h2 style="color: #fff; font-size: 24px; margin-bottom: 10px;">GitHub 社群</h2>
+                    <p style="color: #a1a1aa; font-size: 14px;">社员们的开源项目与个人主页集锦</p >
+                </div>
+            </a >
 
         </div>
     </div>
-
-    <!-- 引入 Supabase SDK 和动态加载脚本 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️注意：记得换成你自己的真实Key
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        async function loadResources() {
-            // 从 resources 表拉取数据
-            const { data, error } = await supabaseClient.from('resources').select('*');
-            if (error) { 
-                console.error("加载资源失败：", error); 
-                return; 
-            }
-
-            // 每次加载前先清空列表
-            document.getElementById('list-ai').innerHTML = '';
-            document.getElementById('list-study').innerHTML = '';
-            document.getElementById('list-github').innerHTML = '';
-
-            data.forEach(item => {
-                // 生成卡片的 HTML
-                const html = `
-                    <li>
-                        <strong>${item.title}：</strong> 
-                        <a href="${item.link}" target="_blank">点击查看</a > 
-                        <br><span style="font-size: 13px; color: #888;">${item.desc}</span>
-                    </li>
-                `;
-                
-                // 根据分类把数据塞进对应的框里
-                if (item.category === 'ai') {
-                    document.getElementById('list-ai').innerHTML += html;
-                } else if (item.category === 'study') {
-                    document.getElementById('list-study').innerHTML += html;
-                } else if (item.category === 'github') {
-                    document.getElementById('list-github').innerHTML += html;
-                }
-            });
-        }
-
-        // 页面加载时立刻执行
-        loadResources();
-    </script>
 </body>
 </html>

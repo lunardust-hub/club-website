@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>资源详情 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-container { 
+            max-width: 800px; margin: 120px auto 50px auto; padding: 40px; 
+            background: rgba(20, 30, 50, 0.8); backdrop-filter: blur(12px); 
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; 
+            color: #d4d4d4; position: relative; z-index: 10; 
+        }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #00ffff; text-decoration: none; font-weight: bold; position: relative; z-index: 9999; }
+        .back-btn:hover { text-shadow: 0 0 10px #00ffff; }
+        .detail-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); font-size: 32px; margin-bottom: 20px; }
+        .detail-cover { width: 100%; max-height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 25px; border: 1px solid #333; }
+        .detail-content { line-height: 1.8; font-size: 16px; white-space: pre-wrap; margin-bottom: 30px; }
+        .action-btn { display: inline-block; padding: 12px 24px; background: #00ffff; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; box-shadow: 0 0 10px rgba(0,255,255,0.5); transition: 0.3s; }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(0,255,255,0.8); }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <a href="categoty.html" class="back-btn">← 返回上一页</a >
+        <div id="loading" style="text-align: center; font-size: 18px;">正在加载内容...</div>
+        
+        <div id="content-area" style="display: none;">
+            <img id="d-cover" class="detail-cover" src="" alt="封面图">
+            <h1 id="d-title" class="detail-title"></h1>
+            <div id="d-content" class="detail-content"></div>
+            
+            <a id="d-link" href="#" target="_blank" class="action-btn">🚀 访问原始链接</a >
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 务必换成你真实的 Key
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const resourceId = urlParams.get('id');
+
+        async function loadDetail() {
+            if (!resourceId) {
+                document.getElementById('loading').innerText = '找不到该资源，请检查链接。';
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('resources')
+                .select('*')
+                .eq('id', resourceId)
+                .single();
+
+            if (error || !data) {
+                console.error(error);
+                document.getElementById('loading').innerText = '加载失败，资源可能不存在。';
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content-area').style.display = 'block';
+            
+            if (data.cover_url) {
+                document.getElementById('d-cover').src = data.cover_url;
+            } else {
+                document.getElementById('d-cover').style.display = 'none';
+            }
+
+            document.getElementById('d-title').innerText = data.title;
+            document.getElementById('d-content').innerText = data.detail || data.desc || '暂无详细内容。';
+            document.getElementById('d-link').href = data.link;
+        }
+
+        loadDetail();
+    </script>
+</body>
+</html>

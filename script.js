@@ -3,23 +3,25 @@ const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); 
-    const name = document.getElementById('name').value;
-    const major = document.getElementById('major').value;
-    const department = document.getElementById('department').value;
+  e.preventDefault();
+  
+  const name = document.getElementById('name').value;
+  const major = document.getElementById('major').value;
+  const department = document.getElementById('department').value;
+  const contact = document.getElementById('contact').value; // 新增：获取联系方式
 
-    const { data, error } = await supabaseClient
-      .from('registrations')
-      .insert([{ name: name, major: major, department: department }]);
+  const { data, error } = await supabaseClient
+    .from('registrations')
+    .insert([{ name: name, major: major, department: department, contact: contact }]); // 新增：存入联系方式
 
-    if (error) {
-      console.error(error);
-      alert('报名失败，请检查控制台！');
-    } else {
-      alert('报名成功！欢迎加入逐浪智用社！');
-      document.getElementById('registerForm').reset(); 
-    }
-  });
+  if (error) {
+    console.error(error);
+    alert('报名失败，请检查控制台！');
+  } else {
+    alert('报名成功！欢迎加入逐浪智用社！');
+    document.getElementById('registerForm').reset();
+  }
+});
   // ==========================================
 // 动态加载最新动态（推文）
 // ==========================================
