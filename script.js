@@ -60,8 +60,8 @@ async function loadNews() {
                 <span style="color: #a1a1aa; font-size: 14px; background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 5px;">${item.date_str || '最新'}</span>
               </div>
               <p style="color: #d4d4d4; line-height: 1.8; margin: 0;">
-                ${item.content}
-              </p >
+  ${item.content.replace(/<[^>]+>/g, '').substring(0, 60)}...
+</p >
             </div>
         `;
         container.innerHTML += card;

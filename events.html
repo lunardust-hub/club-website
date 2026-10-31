@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>活动专区 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .gallery-container { max-width: 1000px; margin: 100px auto 50px auto; padding: 20px; position: relative; z-index: 10; }
+        .back-btn { color: #00ffff; text-decoration: none; font-size: 18px; display: inline-block; margin-bottom: 20px; position: relative; z-index: 99; }
+        .page-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); text-align: center; margin-bottom: 40px; font-size: 36px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .news-card { background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; overflow: hidden; transition: 0.3s; text-decoration: none; color: inherit; display: block; }
+        .news-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2); }
+        .news-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid #00ffff; }
+        .news-info { padding: 20px; }
+        .news-title { color: #fff; font-size: 20px; margin-bottom: 10px; font-weight: bold; }
+        .news-date { font-size: 12px; color: #00ffff; margin-bottom: 8px; display: block; }
+        .news-content { color: #a1a1aa; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <div class="gallery-container">
+        <a href="index.html" class="back-btn">← 返回首页</a >
+        <h1 class="page-title">🎉 活动专区</h1>
+        <div class="gallery-grid" id="events-list"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️换成你的
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function loadEvents() {
+            const { data, error } = await supabaseClient.from('events').select('*').order('id', { ascending: false });
+            if (error) { console.error(error); return; }
+
+            const list = document.getElementById('events-list');
+            if(data.length === 0) { list.innerHTML = '<p style="color:#888;">暂无活动，敬请期待~</p >'; return; }
+
+            data.forEach(item => {
+                const img = item.cover_url || 'bg.jpg';
+                list.innerHTML += `
+                    <a href="event-detail.html?id=${item.id}" class="news-card">
+                        <img src="${img}" class="news-img" alt="活动图">
+                        <div class="news-info">
+                            <span class="news-date">📅 ${item.date_str || '近期'}</span>
+                            <div class="news-title">${item.title}</div>
+                            <div class="news-content">${item.content.replace(/<[^>]+>/g, '')}</div>
+                        </div>
+                    </a >
+                `;
+            });
+        }
+        loadEvents();
+    </script>
+</body>
+</html>

@@ -18,7 +18,13 @@
         .news-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .news-date { font-size: 12px; color: #00ffff; margin-bottom: 8px; display: block; }
         .news-title { color: #fff; font-size: 20px; margin-bottom: 10px; font-weight: bold; }
-        .news-content { color: #a1a1aa; font-size: 14px; line-height: 1.6; flex-grow: 1; }
+        .news-content { 
+    color: #a1a1aa; font-size: 14px; line-height: 1.6; flex-grow: 1; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+}
     </style>
 </head>
 <body>
@@ -26,8 +32,16 @@
         <a href="index.html" class="back-btn">← 返回首页</a >
         <h1 class="page-title">📸 社团风采展示</h1>
         
+        <!-- 只有这一个唯一的网格容器 -->
         <div class="gallery-grid" id="gallery-list">
             <!-- JS 动态注入 -->
+        </div>
+
+        <!-- 加载更多按钮 -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="load-more-btn" onclick="loadMoreNews()" style="display: none; padding: 12px 30px; background: transparent; color: #00ffff; border: 1px solid #00ffff; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px rgba(0,255,255,0.2); transition: 0.3s;">
+                加载更多动态 ↓
+            </button>
         </div>
     </div>
 
@@ -37,38 +51,60 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 换成你的
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        // 核心：定义分页变量
+        let currentOffset = 0;
+        const pageSize = 6; // 每次只加载 6 条，你可以自己改
+
         async function loadGallery() {
-            // 拉取所有推文，最新的在最前面
+            // 去数据库拿数据，使用 range 实现分页
             const { data, error } = await supabaseClient
                 .from('news')
                 .select('*')
-                .order('id', { ascending: false });
+                .order('id', { ascending: false })
+                .range(currentOffset, currentOffset + pageSize - 1); // 核心：拉取区间
 
             if (error) { console.error(error); return; }
 
             const list = document.getElementById('gallery-list');
-            if (data.length === 0) {
-                list.innerHTML = '<p style="color:#888; text-align:center; grid-column: 1/-1;">宣传部还没有发布风采内容哦~</p >';
+            const btn = document.getElementById('load-more-btn');
+
+            // 如果是第一次加载且没数据
+            if (currentOffset === 0 && data.length === 0) {
+                list.innerHTML = '<p style="color:#888; text-align:center; grid-column: 1/-1;">宣传部还没有发布内容哦~</p >';
                 return;
             }
 
+            // 渲染数据
             data.forEach(item => {
-                // 有图用图，没图用默认星空
                 const img = item.cover_url || 'bg.jpg';
-                
                 const html = `
-                    <div class="news-card">
-                        <img src="${img}" class="news-img" alt="风采图">
-                        <div class="news-info">
-                            <span class="news-date">📅 ${item.date_str || '最新发布'}</span>
-                            <div class="news-title">${item.title}</div>
-                            <div class="news-content">${item.content}</div>
-                        </div>
-                    </div>
-                `;
+    <a href="news-detail.html?id=${item.id}" class="news-card" style="text-decoration: none; color: inherit; display: block;">
+        <img src="${img}" class="news-img" alt="风采图">
+        <div class="news-info">
+            <span class="news-date">📅 ${item.date_str || '最新发布'}</span>
+            <div class="news-title">${item.title}</div>
+            <div class="news-content">${item.content}</div>
+        </div>
+    </a >
+`;
                 list.innerHTML += html;
             });
+
+            // 如果这一页拉取的数据少于 6 条，说明没更多了，隐藏按钮
+            if (data.length < pageSize) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'inline-block';
+            }
         }
+
+        // 点击加载更多
+        function loadMoreNews() {
+            currentOffset += pageSize; // 偏移量增加 6
+            loadGallery(); // 再拉一次数据
+        }
+
+        // 页面加载时启动
         loadGallery();
     </script>
 </body>

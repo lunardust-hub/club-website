@@ -22,7 +22,7 @@
 </head>
 <body>
     <div class="detail-container">
-        <a href="categoty.html" class="back-btn">← 返回上一页</a >
+        <a href="category.html" class="back-btn">← 返回上一页</a >
         <div id="loading" style="text-align: center; font-size: 18px;">正在加载内容...</div>
         
         <div id="content-area" style="display: none;">
@@ -71,7 +71,7 @@
             }
 
             document.getElementById('d-title').innerText = data.title;
-            document.getElementById('d-content').innerText = data.detail || data.desc || '暂无详细内容。';
+            document.getElementById('d-content').innerHTML = data.detail || data.desc || '暂无详细内容。';
             document.getElementById('d-link').href = data.link;
         }
 

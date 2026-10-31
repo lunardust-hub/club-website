@@ -69,6 +69,8 @@
         <button class="tab-btn active" onclick="switchTab('newsTab')" id="btn-newsTab">📝 动态与推文发布</button>
         <button class="tab-btn" onclick="switchTab('dataTab')" id="btn-dataTab">📊 报名数据管理</button>
         <button class="tab-btn" onclick="switchTab('resourceTab')" id="btn-resourceTab">📚 资源发布</button>
+        <button class="tab-btn" onclick="switchTab('auditTab')" id="btn-auditTab">🛡️ 广场审核</button>
+        <button class="tab-btn" onclick="switchTab('eventTab')" id="btn-eventTab">🎉 活动发布</button>
     </div>
 
     <!-- 视图 1：发帖区 -->
@@ -90,22 +92,46 @@
         </div>
     </div>
 
+    
     <!-- 视图 2：报名数据区 -->
-    <div id="dataTab" style="display: none; width: 100%;">
-        <table id="registrationTable">
-            <thead>
-                <tr>
-                    <th>姓名</th>
-                    <th>专业</th>
-                    <th>意向部门</th>
-                    <th>联系方式</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 数据通过 JS 插入 -->
-            </tbody>
-        </table>
-    </div>
+<div id="dataTab" style="display: none; width: 100%;">
+    
+    <!-- 第一个表格：社团招新报名 -->
+    <h3 style="color: #00ffff; margin-top: 30px; text-align: center; text-shadow: 0 0 10px rgba(0,255,255,0.5);">📊 社团招新报名</h3>
+    <table id="registrationTable" style="width: 80%; border-collapse: collapse; margin-top: 20px; margin: 20px auto;">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>专业</th>
+                <th>意向部门</th>
+                <th>联系方式</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 数据通过 JS 插入 -->
+        </tbody>
+    </table>
+
+    <!-- 分隔线 -->
+    <hr style="border-color: rgba(255,255,255,0.1); margin: 50px auto; width: 80%;">
+
+    <!-- 第二个表格：活动报名 -->
+    <h3 style="color: #00ffff; margin-top: 30px; text-align: center; text-shadow: 0 0 10px rgba(0,255,255,0.5);">🎉 活动报名记录</h3>
+    <table id="eventSignupTable" style="width: 80%; border-collapse: collapse; margin: 20px auto 40px auto;">
+        <thead>
+            <tr>
+                <th>活动名称</th>
+                <th>姓名</th>
+                <th>联系方式</th>
+                <th>专业</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 数据通过 JS 插入 -->
+        </tbody>
+    </table>
+
+</div>
 
     <!-- 视图 3：资源发布区 -->
 <div id="resourceTab" style="display: none; width: 100%;">
@@ -129,7 +155,9 @@
             <option value="ai">AI 工具导航</option>
             <option value="study">学习资源分享</option>
             <option value="github">GitHub 社群</option>
-             
+            <option value="competition">🏆 比赛平台</option>
+            <option value="seminar">🎙️ 技术研讨会和精品课</option>
+            <option value="collab">🤝 项目协作</option>
         </select>
         
         <button onclick="publishResource()" 
@@ -138,130 +166,133 @@
         </button>
     </div>
 </div>
+<!-- 视图 4：广场审核区 -->
+<div id="auditTab" style="display: none; width: 100%;">
+    <div style="background: rgba(20, 30, 50, 0.8); padding: 30px; border-radius: 10px; border: 1px solid rgba(0, 255, 255, 0.3); max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+        <h2 style="color: #00ffff; margin-bottom: 20px; text-align: center;">🛡️ 社员发帖审核</h2>
+        <div id="pending-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
+    </div>
+</div><!-- 视图 5：活动发布区 -->
+<div id="eventTab" style="display: none; width: 100%;">
+    <div style="background: rgba(20, 30, 50, 0.8); padding: 30px; border-radius: 10px; border: 1px solid rgba(0, 255, 255, 0.3); max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+        <h2 style="color: #00ffff; margin-bottom: 20px; text-align: center;">🎉 发布全新活动</h2>
+        
+        <input type="text" id="evTitle" placeholder="活动名称（如：迎新晚会）" 
+               style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
+        
+        <input type="text" id="evDate" placeholder="活动时间及地点（如：2026-11-15 19:00 中心校区信息楼102）" 
+               style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
+               
+        <input type="text" id="evCover" placeholder="活动封面图链接（可选）" 
+               style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
 
+        <textarea id="evContent" placeholder="活动详细内容（支持 HTML 格式）..." rows="8" 
+                  style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; resize: vertical;"></textarea>
+        
+        <button onclick="publishEvent()" 
+                style="padding: 12px 30px; background: #00ffff; color: #000; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 0 10px rgba(0,255,255,0.5); width: 100%;">
+                确认发布活动
+        </button>
+    </div>
+</div>
     <!-- 返回首页 -->
     <div style="margin-top: 40px;">
         <a href="index.html" style="color: #00ffff; text-decoration: none; font-size: 18px;">← 返回首页</a >
     </div>
-
+<script>
     <!-- JS 脚本区（注意：Supabase的初始化代码和之前的函数都在这里） -->
-    <script>
-        // 1. 改名，防止冲突
-        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // 确保这里是你真实的 Key
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    // ==========================================
+// 1. 初始化与配置
+// ==========================================
+const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 注意替换成你自己的Key
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. 初始化管理员
-        async function initAdmin() {
-            const password = prompt('请输入管理员密码：');
-            if (password !== 'admin123') {
-                alert('密码错误，请重试。');
-                window.location.href = 'index.html';
-                return;
-            }
+// ==========================================
+// 2. 初始化管理员（密码验证 + 加载报名表）
+// ==========================================
+async function initAdmin() {
+    const password = prompt('请输入管理员密码：');
+    if (password !== 'admin123') {
+        alert('密码错误，请重试。');
+        window.location.href = 'index.html';
+        return;
+    }
 
-            const loading = document.querySelector('.loading');
-            if (loading) loading.style.display = 'none';
+    const loading = document.querySelector('.loading');
+    if (loading) loading.style.display = 'none';
 
-            const tableBody = document.querySelector('#registrationTable tbody');
+    const tableBody = document.querySelector('#registrationTable tbody');
+    if(!tableBody) return;
 
-            const { data, error } = await supabaseClient
-                .from('registrations')
-                .select('*');
+    const { data, error } = await supabaseClient.from('registrations').select('*');
 
-            if (error) {
-                console.error(error);
-                alert('获取数据失败，请检查网络！');
-            } else {
-                data.forEach(registration => {
-                    const row = tableBody.insertRow();
-                    const nameCell = row.insertCell(0);
-                    const majorCell = row.insertCell(1);
-                    const departmentCell = row.insertCell(2);
-                    const contactCell = row.insertCell(3);
+    if (error) {
+        console.error(error);
+        alert('获取数据失败，请检查网络！');
+    } else {
+        data.forEach(registration => {
+            const row = tableBody.insertRow();
+            const nameCell = row.insertCell(0);
+            const majorCell = row.insertCell(1);
+            const departmentCell = row.insertCell(2);
+            const contactCell = row.insertCell(3);
 
-                    nameCell.textContent = registration.name;
-                    majorCell.textContent = registration.major;
-                    departmentCell.textContent = registration.department;
-                    contactCell.textContent = registration.contact||'未填写';
-                });
-            }
-        }
-
-        // 3. 发帖函数
-        async function publishNews() {
-            const title = document.getElementById('newsTitle').value;
-            const content = document.getElementById('newsContent').value;
-            
-            if (!title || !content) {
-                alert("标题和内容不能为空哦！");
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0];
-
-            const { error } = await supabaseClient
-                .from('news')
-                .insert([{ title: title, content: content, date_str: today }]);
-
-            if (error) {
-                console.error(error);
-                alert("发布失败，请检查网络！");
-            } else {
-                alert("🎉 发布成功！快去首页看看效果吧！");
-                document.getElementById('newsTitle').value = '';
-                document.getElementById('newsContent').value = '';
-            }
-        }
-
-        // 4. 标签页切换函数
-        // 4. 标签页切换函数（升级版）
-function switchTab(tabId) {
-    // 隐藏所有内容
-    document.getElementById('newsTab').style.display = 'none';
-    document.getElementById('dataTab').style.display = 'none';
-    document.getElementById('resourceTab').style.display = 'none';
-    
-    // 移除所有按钮的高亮
-    document.getElementById('btn-newsTab').classList.remove('active');
-    document.getElementById('btn-dataTab').classList.remove('active');
-    document.getElementById('btn-resourceTab').classList.remove('active');
-
-    // 显示选中的内容，并高亮按钮
-    document.getElementById(tabId).style.display = 'block';
-    document.getElementById('btn-' + tabId).classList.add('active');
+            nameCell.textContent = registration.name;
+            majorCell.textContent = registration.major;
+            departmentCell.textContent = registration.department;
+            contactCell.textContent = registration.contact || '未填写';
+        });
+    }
 }
-2// 5. 发布资源函数
-// 5. 发布资源函数（升级版）
+
+// ==========================================
+// 3. 发布推文函数
+// ==========================================
+async function publishNews() {
+    const title = document.getElementById('newsTitle').value;
+    const content = document.getElementById('newsContent').value;
+    const cover = document.getElementById('newsCover').value;
+    
+    if (!title || !content) { alert("标题和内容不能为空哦！"); return; }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const { error } = await supabaseClient.from('news').insert([{ 
+        title: title, content: content, date_str: today, cover_url: cover 
+    }]);
+
+    if (error) {
+        alert("发布失败：" + error.message);
+    } else {
+        alert("🎉 发布成功！去首页看看效果吧！");
+        document.getElementById('newsTitle').value = '';
+        document.getElementById('newsContent').value = '';
+        document.getElementById('newsCover').value = '';
+    }
+}
+
+// ==========================================
+// 4. 发布资源函数
+// ==========================================
 async function publishResource() {
     const title = document.getElementById('resTitle').value;
     const link = document.getElementById('resLink').value;
     const desc = document.getElementById('resDesc').value;
     const category = document.getElementById('resCategory').value;
-    // 获取新字段的值
-    const cover_url = document.getElementById('resCover').value; 
-    const detail = document.getElementById('resDetail').value;   
+    const cover_url = document.getElementById('resCover').value;
+    const detail = document.getElementById('resDetail').value;
 
     if (!title || !link) { alert("资源名称和链接不能为空！"); return; }
 
-    // 将新字段一起写入数据库
-    const { error } = await supabaseClient
-        .from('resources')
-        .insert([{ 
-            title: title, 
-            link: link, 
-            desc: desc, 
-            category: category,
-            cover_url: cover_url, 
-            detail: detail        
-        }]);
+    const { error } = await supabaseClient.from('resources').insert([{ 
+        title: title, link: link, desc: desc, category: category, cover_url: cover_url, detail: detail 
+    }]);
 
     if (error) {
-        console.error(error);
         alert("发布失败：" + error.message);
     } else {
-        alert("🎉 资源发布成功！去前端看看吧！");
-        // 清空所有输入框
+        alert("🎉 资源发布成功！");
         document.getElementById('resTitle').value = '';
         document.getElementById('resLink').value = '';
         document.getElementById('resDesc').value = '';
@@ -269,11 +300,143 @@ async function publishResource() {
         document.getElementById('resDetail').value = '';
     }
 }
+// 5. 发布活动函数
+async function publishEvent() {
+    const title = document.getElementById('evTitle').value;
+    const date = document.getElementById('evDate').value;
+    const cover = document.getElementById('evCover').value;
+    const content = document.getElementById('evContent').value;
+
+    if(!title || !content) { alert("活动名称和详细内容不能为空！"); return; }
+
+    const { error } = await supabaseClient.from('events').insert([{
+        title: title, 
+        date_str: date, 
+        cover_url: cover, 
+        content: content
+    }]);
+
+    if(error) alert("发布失败：" + error.message);
+    else {
+        alert("🎉 活动发布成功！快去前端看看吧！");
+        document.getElementById('evTitle').value = '';
+        document.getElementById('evDate').value = '';
+        document.getElementById('evCover').value = '';
+        document.getElementById('evContent').value = '';
+    }
+}
+// 6. 加载活动报名数据 (新增)
+async function loadEventSignups() {
+    const tbody = document.querySelector('#eventSignupTable tbody');
+    if (!tbody) return;
+
+    const { data, error } = await supabaseClient
+        .from('event_signups')
+        .select('*')
+        .order('id', { ascending: false });
+
+    if (error) { 
+        console.error("加载活动报名失败:", error); 
+        return; 
+    }
+
+    tbody.innerHTML = '';
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #888;">暂无活动报名数据</td></tr>';
+        return;
+    }
+
+    data.forEach(item => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = item.event_title;
+        row.insertCell(1).textContent = item.name;
+        row.insertCell(2).textContent = item.contact;
+        row.insertCell(3).textContent = item.major || '未填写';
+    });
+}
+// ==========================================
+// 5. 加载待审核的留言 (广场审核)
+// ==========================================
+async function loadPendingTalks() {
+    const list = document.getElementById('pending-list');
+    if (!list) return;
+    
+    list.innerHTML = '<p style="color:#888; text-align:center;">正在加载待审核数据...</p >';
+
+    const { data, error } = await supabaseClient.from('match_talk').select('*').eq('status', 'pending');
+    if (error) { console.error(error); return; }
+
+    if (data.length === 0) {
+        list.innerHTML = '<p style="color:#888; text-align:center;">太棒了，目前没有待审核的帖子！</p >';
+        return;
+    }
+
+    list.innerHTML = '';
+    data.forEach(talk => {
+        list.innerHTML += `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 4px solid #ffaa00;">
+                <p style="color: #fff; margin-bottom: 5px;"><strong>姓名：</strong>${talk.user_name} | <strong>联系：</strong>${talk.contact}</p >
+                <p style="color: #d4d4d4; margin-bottom: 15px; font-size: 14px;">${talk.message}</p >
+                <button onclick="approveTalk(${talk.id})" style="padding: 6px 15px; background: #00ffff; color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">✅ 通过</button>
+                <button onclick="deleteTalk(${talk.id})" style="padding: 6px 15px; background: transparent; color: #ff5555; border: 1px solid #ff5555; border-radius: 5px; cursor: pointer;">❌ 拒绝/删除</button>
+            </div>
+        `;
+    });
+}
+
+// ==========================================
+// 6. 通过审核
+// ==========================================
+async function approveTalk(id) {
+    const { error } = await supabaseClient.from('match_talk').update({ status: 'approved' }).eq('id', id);
+    if (error) alert("操作失败：" + error.message);
+    else { alert("已通过审核！去前端刷新看看吧！"); loadPendingTalks(); }
+}
+
+// ==========================================
+// 7. 拒绝/删除
+// ==========================================
+async function deleteTalk(id) {
+    if (!confirm("确定要删除这条留言吗？")) return;
+    const { error } = await supabaseClient.from('match_talk').delete().eq('id', id);
+    if (error) alert("操作失败：" + error.message);
+    else { alert("已删除！"); loadPendingTalks(); }
+}
+
+// ==========================================
+// 8. 标签页切换函数
+// ==========================================
+function switchTab(tabId) {
+    // 隐藏所有视图
+    document.getElementById('newsTab').style.display = 'none';
+    document.getElementById('dataTab').style.display = 'none';
+    document.getElementById('resourceTab').style.display = 'none';
+    document.getElementById('auditTab').style.display = 'none';
+    document.getElementById('eventTab').style.display = 'none'; // 新增隐藏
+    
+    // 移除所有按钮高亮
+    document.getElementById('btn-newsTab').classList.remove('active');
+    document.getElementById('btn-dataTab').classList.remove('active');
+    document.getElementById('btn-resourceTab').classList.remove('active');
+    document.getElementById('btn-auditTab').classList.remove('active');
+    document.getElementById('btn-eventTab').classList.remove('active'); // 新增移除高亮
+
+    // 显示选中的视图，并高亮按钮
+    document.getElementById(tabId).style.display = 'block';
+    document.getElementById('btn-' + tabId).classList.add('active');
+
+    // 如果点开的是审核面板，立刻去拉取数据
+    if (tabId === 'auditTab') {
+        loadPendingTalks();
+    }
+    // 新增：如果点开的是数据面板，去拉取活动报名表
+if (tabId === 'dataTab') {
+    loadEventSignups();
+}
+}
 
 // 启动
 initAdmin();
-        
-        
-    </script>
+</script>
 </body>
 </html>

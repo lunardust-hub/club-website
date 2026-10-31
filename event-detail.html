@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>活动详情 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-container { max-width: 800px; margin: 100px auto 50px auto; padding: 40px; background: rgba(20, 30, 50, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; color: #d4d4d4; position: relative; z-index: 10; }
+        .back-btn { color: #00ffff; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        .detail-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); font-size: 32px; margin-bottom: 10px; }
+        .detail-cover { width: 100%; max-height: 350px; object-fit: cover; border-radius: 8px; margin: 20px 0; }
+        .detail-content { line-height: 1.8; font-size: 16px; margin-bottom: 40px; }
+        
+        /* 报名表单样式 */
+        .signup-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(0, 255, 255, 0.4); padding: 30px; border-radius: 10px; margin-top: 40px; }
+        .signup-box h3 { color: #00ffff; margin-bottom: 20px; text-align: center; }
+        .signup-box input { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; }
+        .signup-box button { width: 100%; padding: 12px; background: #00ffff; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <a href="events.html" class="back-btn">← 返回活动大厅</a >
+        <div id="loading">正在加载活动...</div>
+
+        <div id="content-area" style="display: none;">
+            <h1 id="e-title" class="detail-title"></h1>
+            <span id="e-date" style="color: #00ffff; font-size: 14px;"></span>
+            <img id="e-cover" class="detail-cover" src="">
+            <div id="e-content" class="detail-content"></div>
+
+            <!-- 报名表单 -->
+            <div class="signup-box">
+                <h3>📝 立即报名参加</h3>
+                <input type="text" id="signupName" placeholder="你的姓名">
+                <input type="text" id="signupContact" placeholder="联系方式（微信/QQ）">
+                <input type="text" id="signupMajor" placeholder="年级专业">
+                <button onclick="submitSignup()">提交报名</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️换成你的
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+        let currentEventTitle = '';
+
+        async function loadEventDetail() {
+            if(!eventId) return;
+            const { data, error } = await supabaseClient.from('events').select('*').eq('id', eventId).single();
+            
+            if(error || !data) { document.getElementById('loading').innerText = "加载失败"; return; }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content-area').style.display = 'block';
+            
+            currentEventTitle = data.title; // 保存活动名用于报名
+            document.getElementById('e-title').innerText = data.title;
+            document.getElementById('e-date').innerText = `📅 时间：${data.date_str || '待定'}`;
+            document.getElementById('e-content').innerHTML = data.content;
+            if(data.cover_url) document.getElementById('e-cover').src = data.cover_url;
+        }
+
+        async function submitSignup() {
+            const name = document.getElementById('signupName').value;
+            const contact = document.getElementById('signupContact').value;
+            const major = document.getElementById('signupMajor').value;
+
+            if(!name || !contact) { alert("姓名和联系方式不能为空！"); return; }
+
+            const { error } = await supabaseClient.from('event_signups').insert([{
+                event_title: currentEventTitle, name: name, contact: contact, major: major
+            }]);
+
+            if(error) alert("报名失败：" + error.message);
+            else {
+                alert("🎉 报名成功！");
+                document.getElementById('signupName').value = '';
+                document.getElementById('signupContact').value = '';
+                document.getElementById('signupMajor').value = '';
+            }
+        }
+        
+        loadEventDetail();
+    </script>
+</body>
+</html>

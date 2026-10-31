@@ -10,64 +10,168 @@
         .page-title { color: #fff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8); text-align: center; margin-bottom: 40px; font-size: 32px; }
         .resource-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; margin-bottom: 15px; display: flex; gap: 20px; align-items: center; border-left: 4px solid #00ffff; transition: 0.3s; }
         .resource-item:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
+         /* 给这个页面单独定制更暗的背景遮罩 */
+        body {
+            background-color: #050814;
+            /* 这里的 0.85 和 0.95 代表遮罩的厚度，数字越大背景越暗 */
+            background-image: linear-gradient(rgba(5, 8, 20, 0.85), rgba(5, 8, 20, 0.95)), url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
     </style>
 </head>
 <body>
     <div class="list-container">
-        <a href="resource-open.html" class="back-btn">← 返回资源大厅</a >
+        <a href="index.html" class="back-btn">← 返回资源大厅</a >
         <h1 id="page-title" class="page-title">加载中...</h1>
         
-        <!-- 列表容器 -->
-        <ul id="resource-list" style="list-style: none; padding: 0;"></ul>
+        <!-- 比赛列表容器 -->
+        <ul id="resource-list" style="list-style: none; padding: 0; margin-bottom: 50px;"></ul>
+        <!-- 新增：加载更多资源按钮 -->
+<div style="text-align: center; margin-bottom: 50px;">
+    <button id="load-more-res-btn" onclick="loadMoreResources()" style="display: none; padding: 12px 30px; background: transparent; color: #00ffff; border: 1px solid #00ffff; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px rgba(0,255,255,0.2); transition: 0.3s;">
+        加载更多资源 ↓
+    </button>
+</div>
+
+        <!-- 专属交流区：仅当分类为“比赛”时显示 -->
+        <div id="match-talk-section" style="display: none;">
+            <h2 style="color: #00ffff; text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,255,255,0.5);">🤝 组队与交流区</h2>
+            
+            <!-- 留言框 -->
+            <div style="background: rgba(20, 30, 50, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <input type="text" id="talkName" placeholder="你的姓名/昵称" style="width: 48%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; margin-right: 2%;">
+                <input type="text" id="talkContact" placeholder="微信号/QQ" style="width: 48%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white;">
+                <textarea id="talkMessage" placeholder="你想参加什么比赛？缺什么位置的队友？（如：找两个会写代码的队友打数模）" rows="3" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #555; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box;"></textarea>
+                <button onclick="submitTalk()" style="padding: 10px 20px; background: #00ffff; color: #000; font-weight: bold; border: none; border-radius: 5px; cursor: pointer;">发布留言</button>
+            </div>
+
+            <!-- 留言展示墙 -->
+            <div id="talk-list"></div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   <script>
-    const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️换成你的真实Key
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 换成你的
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // 读取 URL 参数
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('cat') || 'ai'; 
-    
-    const titleMap = { 'ai': '🤖 AI 工具导航', 'study': '📚 学习资源分享', 'github': '🐙 GitHub 社群' };
-    document.getElementById('page-title').innerText = titleMap[category] || '资源列表';
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('cat') || 'ai'; 
+        
+        const titleMap = { 
+            'ai': '🤖 AI 工具导航', 'study': '📚 学习资源分享', 'github': '🐙 GitHub 社群',
+            'competition': '🏆 比赛平台', 'seminar': '🎙️ 技术研讨会', 'collab': '🤝 项目协作'
+        };
+        document.getElementById('page-title').innerText = titleMap[category] || '资源列表';
 
-    async function loadData() {
-        const { data, error } = await supabaseClient
-            .from('resources')
-            .select('*')
-            .eq('category', category);
-
-        if (error) { console.error(error); return; }
-
-        const list = document.getElementById('resource-list');
-        if(data.length === 0) {
-            list.innerHTML = '<p style="color:#888; text-align:center;">这里还空空如也，等待发布第一条资源~</p >';
-            return;
+        // 如果是比赛平台，就把下方的交流区显示出来
+        if (category === 'competition') {
+            document.getElementById('match-talk-section').style.display = 'block';
+            loadTalks(); // 加载留言
         }
 
-        // 渲染列表（注意这里严格使用了反引号 ` 和 innerHTML）
-        data.forEach(item => {
-            const imgUrl = item.cover_url || 'bg.jpg'; 
-            
-            const html = `
-                <li class="resource-item">
-                    <img src="${imgUrl}" style="width: 120px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex-shrink: 0;">
-                    <div>
-                        <a href="resource-detail.html?id=${item.id}" style="font-size: 18px; font-weight: bold; color: #fff; text-decoration: none; display: block; margin-bottom: 5px;">
-                            ${item.title} <span style="font-size: 12px; color: #00ffff; margin-left: 10px;">阅读详情 →</span>
-                        </a > 
-                        <span style="font-size: 14px; color: #a1a1aa;">${item.desc || '暂无描述'}</span>
-                    </div>
-                </li>
-            `;
-            // 必须是 innerHTML +=
-            list.innerHTML += html;
-        });
+        // ==========================================
+// 1. 加载官方比赛资源（带分页）
+// ==========================================
+let resOffset = 0;
+const resPageSize = 6; // 每次加载 6 个资源
+
+async function loadResources() {
+    const { data, error } = await supabaseClient
+        .from('resources')
+        .select('*')
+        .eq('category', category)
+        .order('id', { ascending: false }) // 最新的排前面
+        .range(resOffset, resOffset + resPageSize - 1); // 核心：分页拉取
+
+    if (error) { console.error(error); return; }
+
+    const list = document.getElementById('resource-list');
+    const btn = document.getElementById('load-more-res-btn');
+
+    if (resOffset === 0 && data.length === 0) {
+        list.innerHTML = '<p style="color:#888; text-align:center;">这里还空空如也，等待发布~</p >';
+        return;
     }
-    loadData();
-</script>
+
+    // 渲染列表
+data.forEach(item => {
+    const imgUrl = item.cover_url || 'bg.jpg'; 
+    const html = `
+        <li style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; border-left: 4px solid #00ffff;">
+            <img src="${imgUrl}" style="width: 120px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; flex-shrink: 0;">
+            <div>
+                <a href="resource-detail.html?id=${item.id}" style="font-size: 18px; font-weight: bold; color: #fff; text-decoration: none; display: block; margin-bottom: 5px;">
+                    ${item.title} <span style="font-size: 12px; color: #00ffff; margin-left: 10px;">阅读详情 →</span>
+                </a > 
+                <span style="font-size: 14px; color: #a1a1aa;">${item.desc || '暂无描述'}</span>
+            </div>
+        </li>
+    `;
+    list.innerHTML += html;
+});
+
+    // 判断是否还有更多数据
+    if (data.length < resPageSize) {
+        btn.style.display = 'none';
+    } else {
+        btn.style.display = 'inline-block';
+    }
+}
+
+// 点击加载更多
+function loadMoreResources() {
+    resOffset += resPageSize;
+    loadResources();
+}
+
+// 启动加载
+loadResources();
+
+        // 2. 提交组队留言
+        async function submitTalk() {
+            const name = document.getElementById('talkName').value;
+            const contact = document.getElementById('talkContact').value;
+            const message = document.getElementById('talkMessage').value;
+            if(!name || !message) { alert("请填写名字和留言内容！"); return; }
+
+            const { error } = await supabaseClient.from('match_talk').insert([{ 
+                user_name: name, contact: contact, message: message, status: 'pending' 
+            }]);
+
+            if(error) alert("发布失败：" + error.message);
+            else {
+                alert("发布成功！审核通过后将展示在下方~");
+                document.getElementById('talkName').value = '';
+                document.getElementById('talkContact').value = '';
+                document.getElementById('talkMessage').value = '';
+            }
+        }
+
+        // 3. 加载已审核的留言
+        async function loadTalks() {
+            const { data, error } = await supabaseClient.from('match_talk').select('*').eq('status', 'approved').order('id', { ascending: false });
+            if(error) return;
+
+            const list = document.getElementById('talk-list');
+            if(data.length === 0) { list.innerHTML = '<p style="color:#888; text-align:center;">暂无组队信息，快来发一条吧~</p >'; return; }
+
+            data.forEach(talk => {
+                list.innerHTML += `
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 2px solid #00ffff;">
+                        <strong style="color: #00ffff;">👤 ${talk.user_name} (联系: ${talk.contact})</strong>
+                        <p style="color: #d4d4d4; margin-top: 8px; font-size: 14px;">${talk.message}</p >
+                    </div>
+                `;
+            });
+        }
+    </script>
 </body>
 </html>
