@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>交流详情 - 逐浪智用社</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-container { max-width: 700px; margin: 120px auto 50px auto; padding: 40px; background: rgba(20, 30, 50, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; color: #d4d4d4; position: relative; z-index: 10; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #00ffff; text-decoration: none; font-weight: bold; position: relative; z-index: 99; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px; }
+        .author-info { color: #fff; font-size: 20px; font-weight: bold; }
+        .contact-info { color: #00ffff; font-size: 14px; background: rgba(0,255,255,0.1); padding: 5px 10px; border-radius: 5px; }
+        .post-content { line-height: 1.8; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <a href="category.html" class="back-btn">← 返回上一页</a >
+        
+        <div id="loading" style="text-align: center;">正在加载详情...</div>
+
+        <div id="content-area" style="display: none;">
+            <div class="post-header">
+                <div class="author-info" id="t-name"></div>
+                <div class="contact-info" id="t-contact"></div>
+            </div>
+            <div class="post-content" id="t-message"></div>
+            <!-- 新增：专属跳转按钮容器 -->
+<div id="link-container" style="margin-top: 30px; display: none;">
+    <a id="action-link" href=" " target="_blank" style="display: block; text-align: center; padding: 12px; background: #00ffff; color: #000; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 0 15px rgba(0,255,255,0.4); transition: 0.3s;">
+        🚀 点击访问分享的链接
+    </a >
+</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://jjsjpqrgdclczhujkgpc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️换成你的Key
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 获取 URL 里的 id
+        const urlParams = new URLSearchParams(window.location.search);
+        const talkId = urlParams.get('id');
+
+        async function loadTalkDetail() {
+            if (!talkId) {
+                document.getElementById('loading').innerText = '找不到该内容。';
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('match_talk')
+                .select('*')
+                .eq('id', talkId)
+                .single();
+
+            if (error || !data) {
+                document.getElementById('loading').innerText = '内容不存在或已被删除。';
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content-area').style.display = 'block';
+
+            document.getElementById('t-name').innerText = `👤 ${data.user_name}`;
+            document.getElementById('t-contact').innerText = `联系：${data.contact || '未提供'}`;
+            
+            // 用 innerText 防止恶意代码，同时配合 CSS 的 pre-wrap 保留换行
+            const messageText = data.message || '';
+
+        // 核心：识别文本中的网址，并生成带真实链接的 <a> 标签
+const urlRegex = /(https?:\/\/[^\s]+)/g;
+const urls = messageText.match(urlRegex);
+
+const linkedMessage = messageText.replace(urlRegex, (url) => {
+    const cleanUrl = url.replace(/[【】。，！？]/g, ''); // 过滤掉中文标点
+    return `<a href=" " target="_blank" style="color: #00ffff; text-decoration: underline;">${cleanUrl}</a >`;
+}).replace(/\n/g, '<br>');
+
+document.getElementById('t-message').innerHTML = linkedMessage;
+
+// 激活下方的大按钮
+if (urls && urls.length > 0) {
+    const primaryUrl = urls[0].replace(/[【】。，！？]/g, '');
+    const actionBtn = document.getElementById('action-link');
+    const linkContainer = document.getElementById('link-container');
+    
+    // 如果页面上有这两个元素，就赋值并显示
+    if (actionBtn && linkContainer) {
+        actionBtn.href = primaryUrl;
+        linkContainer.style.display = 'block'; 
+    }
+}
+        }
+
+        loadTalkDetail();
+    </script>
+</body>
+</html>
