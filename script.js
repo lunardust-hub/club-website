@@ -4,23 +4,52 @@ const supabaseUrl = isLocal ? 'https://jjsjpqrgdclczhujkgpc.supabase.co' : windo
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+  e.preventDefault(); 
   
   const name = document.getElementById('name').value;
   const major = document.getElementById('major').value;
   const department = document.getElementById('department').value;
-  const contact = document.getElementById('contact').value; // 新增：获取联系方式
+  const contact = document.getElementById('contact').value;
+  
+  // 获取简历文件
+  const fileInput = document.getElementById('resumeFile');
+  let fileUrl = ''; 
+  const file = fileInput ? fileInput.files[0] : null;
 
-  const { data, error } = await supabaseClient
+  // 1. 如果用户选了简历文件，先上传到 Supabase Storage
+  if (file) {
+    // 限制文件大小 10MB
+    if (file.size > 10 * 1024 * 1024) { alert("文件太大了，请控制在10MB以内！"); return; }
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `resume_${Date.now()}.${fileExt}`;
+    
+    // 上传到图床桶
+    const { data, error } = await supabaseClient.storage.from('images').upload(fileName, file);
+    if (error) { alert("文件上传失败：" + error.message); return; }
+    
+    // 获取公开可访问的链接
+    const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(fileName);
+    fileUrl = urlData.publicUrl;
+  }
+
+  // 2. 将文字和文件链接一起存入数据库 registrations 表
+  const { error } = await supabaseClient
     .from('registrations')
-    .insert([{ name: name, major: major, department: department, contact: contact }]); // 新增：存入联系方式
+    .insert([{ 
+        name: name, 
+        major: major, 
+        department: department, 
+        contact: contact, 
+        resume_url: fileUrl // ⚠️ 注意：这里存的是文件链接
+    }]);
 
   if (error) {
     console.error(error);
-    alert('报名失败，请检查控制台！');
+    alert('报名失败，请检查网络或控制台！');
   } else {
     alert('报名成功！欢迎加入逐浪智用社！');
-    document.getElementById('registerForm').reset();
+    document.getElementById('registerForm').reset(); // 清空表单
   }
 });
   // ==========================================
