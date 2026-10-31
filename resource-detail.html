@@ -36,7 +36,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseUrl = window.location.origin + '/supabase';
+        const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+const supabaseUrl = isLocal ? 'https://jjsjpqrgdclczhujkgpc.supabase.co' : window.location.origin + '/supabase';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc2pwcXJnZGNsY3podWprZ3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNzMxMDMsImV4cCI6MjEwODY0OTEwM30.xvF8oOQOGk4mu3_WlYGEEZxKKs-aLyiunugF6xuJRQw'; // ⚠️ 务必换成你真实的 Key
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
